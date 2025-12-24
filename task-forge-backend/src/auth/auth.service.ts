@@ -35,7 +35,7 @@ export class AuthService {
 
       return successResponse(
         'User registered successfully',
-        await this.signToken(user.id, user.email),
+        await this.signToken(user.id, user.email,user.name),
       );
     } catch (error: any) {
       return errorResponse('User registration failed', error.message);
@@ -53,7 +53,7 @@ export class AuthService {
 
       const match = await bcrypt.compare(dto.password, user.password);
       if (!match) throw new UnauthorizedException('Invalid credentials');
-      const token = await this.signToken(user.id, user.email);
+      const token = await this.signToken(user.id, user.email,user.name);
       return successResponse('User logged in successfully', token);
     } catch (error: any) {
       return errorResponse('User login failed', error.message);
@@ -61,8 +61,8 @@ export class AuthService {
   }
 
   // SIGN JWT
-  async signToken(userId: string, email: string) {
-    const payload = { sub: userId, email };
+  async signToken(userId: string, email: string,name:string) {
+    const payload = { sub: userId, email ,name};
     return {
       accessToken: await this.jwt.signAsync(payload),
     };

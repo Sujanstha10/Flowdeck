@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext(null);
 
@@ -7,18 +8,32 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const decodeUser = (token) => {
+    if (!token) return null;
+    try {
+      const decoded = jwtDecode(token);
+      return {
+        id: decoded.sub,
+        email: decoded.email,
+        name: decoded.name,
+      };
+    } catch (error) {
+      console.error("Invalid token", error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     // Check for stored token on mount
     const token = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
 
     if (token) {
-      // In a real app, strict validation or a /me endpoint call would happen here
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
+      const userData = decodeUser(token);
+      if (userData) {
+        setUser(userData);
       } else {
-        // Fallback if we have token but no user data (shouldn't happen ideally)
-        setUser({ email: "User" });
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
       }
     }
     setLoading(false);
@@ -33,11 +48,11 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data.status) {
         const { accessToken } = response.data.data;
+        console.log(response.data);
+
         localStorage.setItem("token", accessToken);
 
-        // Since we don't have a /me endpoint yet, we'll store the email locally
-        // to show in the UI.
-        const userData = { email };
+        const userData = decodeUser(accessToken);
         localStorage.setItem("user", JSON.stringify(userData));
         setUser(userData);
 
@@ -69,7 +84,7 @@ export const AuthProvider = ({ children }) => {
         const { accessToken } = response.data.data;
         localStorage.setItem("token", accessToken);
 
-        const userData = { email, name };
+        const userData = decodeUser(accessToken);
         localStorage.setItem("user", JSON.stringify(userData));
         setUser(userData);
 

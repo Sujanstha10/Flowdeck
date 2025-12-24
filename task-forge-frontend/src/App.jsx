@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import "./App.css";
 
 import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./utils/ProtectedRoute";
 
 function App() {
   return (
@@ -15,9 +16,11 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route element={<RootLayout />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/tasks" element={<Tasks />} />
+          <Route element={<ProtectedRoute />}>
+            <Route element={<RootLayout />}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/tasks" element={<Tasks />} />
+            </Route>
           </Route>
         </Routes>
       </Router>
