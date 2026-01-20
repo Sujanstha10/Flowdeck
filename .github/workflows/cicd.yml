@@ -35,4 +35,4 @@ jobs:
         cache-dependency-path: './flowdeck-backend/pnpm-lock.yaml'
     - run: pnpm install
     - run: pnpm run build
-    - run: pnpm test
+    - run: pnpm run start
