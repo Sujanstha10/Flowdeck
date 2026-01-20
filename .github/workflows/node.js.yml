@@ -18,19 +18,22 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [23.x,24.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [23.x, 24.x]
 
     steps:
+    - uses: actions/checkout@v4
+    
     - uses: pnpm/action-setup@v2
       with:
         version: 8
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+        cache: 'pnpm'
+        cache-dependency-path: flowdeck-backend/pnpm-lock.yaml
 
-    - run: pnpm ci
+    - run: pnpm install --frozen-lockfile
     - run: pnpm run build --if-present
     - run: pnpm test
