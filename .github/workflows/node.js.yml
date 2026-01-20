@@ -32,6 +32,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'pnpm'
+        cache-dependency-path: flowdeck-backend/pnpm-lock.yaml
 
     - run: pnpm install
     - run: pnpm run build --if-present
