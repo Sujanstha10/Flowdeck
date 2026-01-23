@@ -45,9 +45,7 @@ jobs:
           pnpm prisma generate
 
       - name: Run database migrations
-        run: |
-          pnpm prisma migrate deploy
-          continue-on-error: false
+        run: pnpm prisma migrate deploy
 
       - name: Build application
         run: pnpm run build
