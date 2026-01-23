@@ -6,7 +6,6 @@ import { Role } from 'src/auth/enums/role.enums';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { successResponse } from 'src/common/helper/response.helper';
 import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
-import { log } from 'console';
 
 @Controller('users')
 @UseInterceptors(CacheInterceptor)

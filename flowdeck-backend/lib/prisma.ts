@@ -3,10 +3,21 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/prisma/client';
 
 const connectionString =
-  `${process.env.DATABASE_URL}` || `${process.env.DATABASE_URL_DEV}`;
+  process.env.DATABASE_URL || process.env.DATABASE_URL_DEV;
 
-const adapter = new PrismaPg({ connectionString });
-const prisma = new PrismaClient({ adapter });
+const adapter = new PrismaPg({
+  connectionString,
+  // Connection pooling settings
+  connectTimeoutMs: 30000,
+  idleInTransactionSessionTimeout: 30000,
+  // PostgreSQL connection pool settings
+  connectionLimit: 10,
+});
+const prisma = new PrismaClient({
+  adapter,
+  // Add connection pool settings
+  log: ['error', 'warn'],
+});
 
 // Handle connection explicitly
 prisma
