@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-// import { PrismaService } from './prisma/prisma.service';
-// import { PrismaModule } from './prisma/prisma.module';
+import { PrismaModule } from './prisma/prisma.module';
 import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
@@ -16,6 +15,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     CacheModule.registerAsync(RedisOptions),
+    PrismaModule,
     UserModule,
     AuthModule,
     CacheModule.register({ isGlobal: true }),
