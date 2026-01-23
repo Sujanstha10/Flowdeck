@@ -47,7 +47,6 @@ jobs:
       - name: Run database migrations
         run: |
           pnpm prisma migrate deploy
-          pnpm prisma db push
           continue-on-error: false
 
       - name: Build application
