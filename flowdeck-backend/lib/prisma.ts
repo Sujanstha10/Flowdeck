@@ -8,11 +8,14 @@ const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 // Handle connection explicitly
-prisma.$connect().then(() => {
-  console.log('Database connection successful');
-}).catch((error) => {
-  console.error('Database connection failed', error);
-  process.exit(1);
-});
+prisma
+  .$connect()
+  .then(() => {
+    console.log('Database connection successful');
+  })
+  .catch((error) => {
+    console.error('Database connection failed', error);
+    process.exit(1);
+  });
 
 export { prisma };

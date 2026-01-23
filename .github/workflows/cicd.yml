@@ -5,13 +5,12 @@ name: AWS deploy
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
-
     runs-on: self-hosted
-    
+
     defaults:
       run:
         working-directory: ./flowdeck-backend
@@ -21,19 +20,37 @@ jobs:
         node-version: [24.x]
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - uses: pnpm/action-setup@v2
-      with:
-        version: 8
+      - uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
-        cache-dependency-path: './flowdeck-backend/pnpm-lock.yaml'
-    - run: pnpm install
-    - run: pnpm run build
-    - run: pm2 restart flowdeck-backend
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+          cache-dependency-path: "./flowdeck-backend/pnpm-lock.yaml"
+      - run: pnpm install
+
+      - name: Create .env file
+        run: |
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "NODE_ENV=production" >> .env
+
+      - name: Generate Prisma Client
+        run: pnpm prisma generate
+
+      - name: Run database migrations
+        run: pnpm prisma migrate deploy
+        continue-on-error: false
+
+      - name: Build application
+        run: pnpm run build
+
+      - name: Restart application with PM2
+        run: |
+          pm2 restart flowdeck-backend || pm2 start pnpm --name "flowdeck-backend" -- start
+          pm2 save
